@@ -35,6 +35,10 @@ data "aws_iam_policy" "ec2_container_service_role_policy" {
     name = "AmazonEC2ContainerServiceRole"
 }
 
+data "aws_iam_policy" "ec2_ssm_instance_core_role_policy" {
+    name = "AmazonSSMManagedInstanceCore"
+}
+
 data "aws_iam_policy_document" "s3_access_policy" {
     statement {
         actions = [ "s3:ListAllMyBuckets" ]
@@ -63,5 +67,15 @@ data "aws_iam_policy_document" "ec2_iam_assume_role_doc" {
                 "ecs-tasks.amazonaws.com" 
             ]
         }
+    }
+}
+
+data "cloudinit_config" "config" {
+    gzip = false
+    base64_encode = true
+
+    part {
+        content_type = "text/x-shellscript"
+        content = templatefile("${path.module}/user-data.tftpl", { cluster_name = aws_ecs_cluster.my_cluster.name})
     }
 }

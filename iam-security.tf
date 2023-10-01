@@ -40,6 +40,11 @@ resource "aws_iam_role_policy_attachment" "ec2_container_service_role_policy_att
   policy_arn = data.aws_iam_policy.ec2_container_service_role_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "ec2_ssm_managed_instance_core_role_policy_attachments" {
+  role = aws_iam_role.ec2_iam_role.name
+  policy_arn = data.aws_iam_policy.ec2_ssm_instance_core_role_policy.arn
+}
+
 resource "aws_iam_instance_profile" "ec2_instance_profile" {
   name = "ec2_instance_profile"
   role = aws_iam_role.ec2_iam_role.name

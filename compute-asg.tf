@@ -34,4 +34,25 @@ resource "aws_launch_template" "this_launch_template" {
     }
 
     image_id = data.aws_ami.ecs_linux_ami.id
+
+    user_data = data.cloudinit_config.config.rendered
+}
+
+resource "aws_autoscaling_group" "this_asg" {
+  name = "ecs-asg"
+  min_size = 1
+  desired_capacity = 1
+  max_size = 3
+
+  launch_template {
+    id = aws_launch_template.this_launch_template.id
+    version = "$Latest"
+  }
+  availability_zones = [ "ca-central-1a","ca-central-1b", "ca-central-1d" ]
+  health_check_type = "EC2"
+  tag {
+    key = "AmazonECSManaged"
+    value = true
+    propagate_at_launch = true
+  }
 }
