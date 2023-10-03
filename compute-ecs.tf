@@ -20,7 +20,7 @@ resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
             maximum_scaling_step_size = 10
             minimum_scaling_step_size = 1
             status = "ENABLED"
-            target_capacity = 80
+            target_capacity = 90
         }
     }
 }
@@ -39,4 +39,38 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_capacity_providers" {
     lifecycle {
       ignore_changes = [ cluster_name ]
     }
+}
+
+# task def
+resource "aws_ecs_task_definition" "task_def" {
+  # required
+  family = "task_def_nginx"
+  container_definitions = jsonencode([
+    {
+      name = "nginx-container"
+      image = "752200948877.dkr.ecr.ca-central-1.amazonaws.com/testrepo:latest"
+
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort = 0
+          protocol = "tcp"
+        }
+      ]
+
+      memory = 374
+    }
+  ])
+  
+  # optional
+  execution_role_arn = aws_iam_role.ec2_iam_role.arn
+}
+
+# ecs service
+resource "aws_ecs_service" "ecs_service" {
+  name = "nginx-service"
+  cluster = aws_ecs_cluster.my_cluster.id
+  task_definition = aws_ecs_task_definition.task_def.arn
+  desired_count = 15
+  launch_type = "EC2" # defaults to EC2
 }
