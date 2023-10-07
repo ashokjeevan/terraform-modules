@@ -15,7 +15,7 @@ resource "aws_launch_template" "this_launch_template" {
       name = aws_iam_instance_profile.ec2_instance_profile.name
     }
 
-    instance_type = "t2.micro"
+    instance_type = "t3.micro"
     key_name = "ansiblkeypair2023"
 
     tag_specifications {
@@ -41,7 +41,7 @@ resource "aws_launch_template" "this_launch_template" {
 resource "aws_autoscaling_group" "this_asg" {
   name = "ecs-asg"
   min_size = 1
-  desired_capacity = 1
+  # desired_capacity = 1 # empty asg
   max_size = 3
 
   launch_template {
@@ -54,5 +54,9 @@ resource "aws_autoscaling_group" "this_asg" {
     key = "AmazonECSManaged"
     value = true
     propagate_at_launch = true
+  }
+
+  lifecycle {
+    ignore_changes = [ desired_capacity ]
   }
 }
