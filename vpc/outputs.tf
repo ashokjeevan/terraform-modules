@@ -4,8 +4,8 @@ output "vpc_id" {
 }
 
 output "public_subnet_ids" {
-  value = aws_subnet.public_subnets.*.id
-  description = "Public subnet Ids"
+  value = var.public_subnet_cidrs != null ? aws_subnet.public_subnets.*.id : null
+  description = "Public subnet Ids - if created"
 }
 
 output "private_subnet_ids" {
