@@ -40,6 +40,18 @@ resource "aws_subnet" "private_subnets" {
   }
 }
 
+# private rds subnets
+resource "aws_subnet" "private_rds_subnets" {
+  count             = var.private_rds_subnet_cidrs != null ? length(var.private_rds_subnet_cidrs) : 0
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.private_rds_subnet_cidrs[count.index]
+  availability_zone = var.azs[count.index]
+
+  tags = {
+    Name = "private-rds-subnet-${var.azs[count.index]}"
+  }
+}
+
 # Route table for public subnets
 resource "aws_route_table" "public_route_table" {
   count  = var.public_subnet_cidrs != null ? 1 : 0

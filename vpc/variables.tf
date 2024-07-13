@@ -25,6 +25,11 @@ variable "private_subnet_cidrs" {
   type = list(string)
 }
 
+variable "private_rds_subnet_cidrs" {
+  type = list(string)
+  default = null
+}
+
 variable "azs" {
   type = list(string)
 }
